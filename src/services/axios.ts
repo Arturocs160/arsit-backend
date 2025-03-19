@@ -1,4 +1,7 @@
 import axios from "axios";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 class AxiosClient {
     client;
@@ -7,7 +10,7 @@ class AxiosClient {
         this.client = axios.create({
             baseURL,
             headers: {
-                "Authorization": `${process.env.API_KEY_MISTRAL}`
+                "Authorization": `Bearer ${process.env.API_KEY_MISTRAL}`
             }
         })
     }

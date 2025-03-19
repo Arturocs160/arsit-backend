@@ -31,16 +31,9 @@ async function agregarCultivo(request: Request, response: Response) {
 async function verCultivos(request: Request, response: Response) {
     const db = await connect();
     const collection = db.collection('Cultivos');
-    
-    const { invernaderoId } = request.query;
 
-    // console.log(invernaderoId)
-
-    const filteredDocs = await collection.find({ invernaderoId: invernaderoId }).toArray();
-
-    // console.log(filteredDocs)
-
-    response.send(filteredDocs);
+    const invernaderos = await collection.find().toArray();
+    response.send(invernaderos);
 }
 
 async function borrarCultivo(request: Request, response: Response) {

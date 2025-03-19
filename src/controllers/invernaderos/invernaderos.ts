@@ -25,12 +25,13 @@ async function agregarInvernadero(request: Request, response: Response) {
     const db = await connect();
     const collection = db.collection('Invernadero');
     
-    const { nombre, ubicacion, fecha_agregado } = request.body;
+    const { nombre, ubicacion, fecha_agregado, compartirInvernadero } = request.body;
     
     const insertResult = await collection.insertOne( {
         nombre: nombre, 
         ubicacion: ubicacion, 
-        fecha_agregado: fecha_agregado
+        fecha_agregado: fecha_agregado,
+        compartirInvernadero: compartirInvernadero
     } );
     
     // console.log('Inserted document =>', insertResult);
