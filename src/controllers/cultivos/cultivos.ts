@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { ObjectId } from 'mongodb';
 const routerCultivos = express.Router();
-import { connect } from "../../../db/db";
+import { connect } from "../../services/db/mongoDB/db";
 
 
 async function agregarCultivo(request: Request, response: Response) {

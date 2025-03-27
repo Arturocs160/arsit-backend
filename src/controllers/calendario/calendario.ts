@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { ObjectId } from 'mongodb';
 const routerCalendario = express.Router();
-import { connect } from "../../../db/db";
+import { connect } from "../../services/db/mongoDB/db";
 
 
 async function verCalendario(request: Request, response: Response) {

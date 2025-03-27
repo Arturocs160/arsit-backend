@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { ObjectId } from 'mongodb';
 const routerInvernaderos = express.Router();
-import { connect } from "../../../db/db";
+import { connect } from "../../services/db/mongoDB/db";
 
 async function verInvernaderos(request: Request, response: Response) {
     const db = await connect();
