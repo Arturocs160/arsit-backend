@@ -31,8 +31,8 @@ async function borrarSensor(request: Request, response: Response) {
     
 }
 
-routerSensor.get("", verSensores);
-routerSensor.post("", agregarSensor);
+routerSensor.get("/", verSensores);
+routerSensor.post("/", agregarSensor);
 routerSensor.put("/:idSensor", actualizarSensor);
 routerSensor.delete("/:idSensor", borrarSensor);
 routerSensor.get("/datosSensor", obtenerSensorData);
