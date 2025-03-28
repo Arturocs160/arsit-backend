@@ -50,9 +50,6 @@ async function agregarCultivo(request: Request, response: Response) {
     response.send(insertResult);
 }
 
-
-
-
 async function verCultivos(request: Request, response: Response) {
     const db = await connect();
     const collection = db.collection('Cultivos');

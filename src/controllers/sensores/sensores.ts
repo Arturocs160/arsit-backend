@@ -15,7 +15,7 @@ async function obtenerSensorData(request: Request, response: Response) {
 
 async function dispositivosPorRed(request: Request, response: Response) {
   const wifi = String(request.query.wifi); 
-  const password = Number(request.query.password); 
+  const password = String(request.query.password); 
   console.log("Valores recibidos:", { wifi, password });
 
   const ref = db.ref("sensor");
@@ -26,7 +26,7 @@ async function dispositivosPorRed(request: Request, response: Response) {
       .equalTo(wifi)
       .once("value");
 
-    if (snapshot.exists()) {
+    if (snapshot.exists()) {  
       const data = snapshot.val();
 
       const dispositivos = Object.values(data).filter(
@@ -39,7 +39,7 @@ async function dispositivosPorRed(request: Request, response: Response) {
         response.send("No se encontraron coincidencias para la red y contraseña proporcionadas");
       }
     } else {
-      response.send("No se encontraron coincidencias para la red proporcionada");
+      response.status(400).send("No se encontraron coincidencias para la red proporcionada");
     }
   } catch (error) {
     console.error("Error al consultar Firebase:", error);
