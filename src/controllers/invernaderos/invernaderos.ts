@@ -25,21 +25,26 @@ async function agregarInvernadero(request: Request, response: Response) {
     const db = await connect();
     const collection = db.collection('Invernadero');
     
-    const { nombre, ubicacion, fecha_agregado, compartirInvernadero } = request.body;
-    
-    const insertResult = await collection.insertOne( {
+    const { nombre, ubicacion, fecha_agregado, compartir_invernadero } = request.body;
+
+    const existeInvernadero = await collection.findOne({ nombre: nombre });
+
+    if (existeInvernadero) {
+        response.status(400).send({ error: "Ya existe un invernadero con este nombre." });
+        return;
+    }
+
+    const insertResult = await collection.insertOne({
         nombre: nombre, 
         ubicacion: ubicacion, 
         fecha_agregado: fecha_agregado,
-        compartirInvernadero: compartirInvernadero
-    } );
-    
-    // console.log('Inserted document =>', insertResult);
-    
+        compartir_invernadero: compartir_invernadero
+    });
+
     response.send(insertResult);
 }
 
-// Función por probar e implementar
+
 async function borrarInvernadero(request: Request, response: Response) {
     const db = await connect();
     const collection = db.collection('Invernadero');
@@ -47,12 +52,10 @@ async function borrarInvernadero(request: Request, response: Response) {
     const { idInvernadero } = request.params;
 
     const deleteResult = await collection.deleteOne({ _id: new ObjectId(idInvernadero) });
-    // console.log('Deleted documents =>', deleteResult);
 
     response.send(deleteResult);
 }
 
-// Función por probar e implementar
 async function actualizarInvernadero(request: Request, response: Response) {
     const db = await connect();
     const collection = db.collection('Invernadero');
@@ -71,8 +74,6 @@ async function actualizarInvernadero(request: Request, response: Response) {
             }
         }
     );
-
-    // console.log('Updated document =>', updateResult);
 
     response.send(updateResult);
 }

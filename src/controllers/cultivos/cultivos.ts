@@ -6,27 +6,52 @@ import { connect } from "../../services/db/mongoDB/db";
 
 async function agregarCultivo(request: Request, response: Response) {
     const db = await connect();
-    const collection = db.collection('Cultivos');
+    const cultivosCollection = db.collection('Cultivos');
+    const invernaderosCollection = db.collection('Invernadero');
     
-    
-    const { cultivoId, cultivo, invernaderoId, fecha_siembra, notasId, nota, temperaturaMin, temperaturaMax, humedadMin, humedadMax } = request.body;
+    const { cultivo, dispositivo, invernaderoId, fecha_siembra, nota, temperaturaMin, temperaturaMax, humedadMin, humedadMax } = request.body;
 
-    const insertResult = await collection.insertOne( {
-        cultivoId: cultivoId,
-        cultivo: cultivo, 
-        invernaderoId: invernaderoId, 
-        fecha_siembra: fecha_siembra, 
+    const invernadero = await invernaderosCollection.findOne({ _id: new ObjectId(invernaderoId) });
+    console.log(invernadero);
+    if (!invernadero) {
+        response.status(404).send({ error: "El invernadero especificado no existe." });
+        return;
+    }
+
+    if (!invernadero.compartir_invernadero) {
+        response.status(403).send({ error: "El invernadero no permite agregar más cultivos." });
+        return;
+    }
+
+    const existeCultivo = await cultivosCollection.findOne({ cultivo: cultivo, invernaderoId: invernaderoId });
+    if (existeCultivo) {
+        response.status(400).send({ error: "Ya existe un cultivo con ese nombre en el invernadero especificado." });
+        return;
+    }
+
+    const dispositivoUsado = await cultivosCollection.findOne({ dispositivo: dispositivo });
+    if (dispositivoUsado) {
+        response.status(400).send({ error: "El dispositivo ya está asignado a otro cultivo." });
+        return;
+    }
+
+    const insertResult = await cultivosCollection.insertOne({
+        cultivo: cultivo,
+        dispositivo: dispositivo,
+        invernaderoId: invernaderoId,
+        fecha_siembra: fecha_siembra,
         nota: nota,
         parametros_optimos: {
-            temperatura: {min: temperaturaMin, max: temperaturaMax}, 
-            humedad:{min: humedadMin, max: humedadMax}
+            temperatura: { min: temperaturaMin, max: temperaturaMax },
+            humedad: { min: humedadMin, max: humedadMax }
         }
-    } );
-
-    // console.log('Inserted document =>', insertResult);
+    });
 
     response.send(insertResult);
 }
+
+
+
 
 async function verCultivos(request: Request, response: Response) {
     const db = await connect();
@@ -43,7 +68,6 @@ async function borrarCultivo(request: Request, response: Response) {
     const { cultivoId } = request.params;
 
     const deleteResult = await collection.deleteOne({ _id: new ObjectId(cultivoId) });
-    // console.log('Deleted documents =>', deleteResult);
 
     response.send(deleteResult);
 }
@@ -52,7 +76,7 @@ async function actualizarCultivo(request: Request, response: Response) {
     const db = await connect();
     const collection = db.collection('Cultivos');
     
-    const { cultivoId, cultivo, invernaderoId, fecha_siembra, notasId, nota, temperaturaMin, temperaturaMax, humedadMin, humedadMax } = request.body;
+    const { cultivoId, cultivo, invernaderoId, fecha_siembra, nota, temperaturaMin, temperaturaMax, humedadMin, humedadMax } = request.body;
     
     const filtro = { _id: new ObjectId(cultivoId) };
 
@@ -70,8 +94,6 @@ async function actualizarCultivo(request: Request, response: Response) {
             }
         }
     );
-
-    // console.log('Updated document =>', updateResult);
 
     response.send(updateResult);
 }
